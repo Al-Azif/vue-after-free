@@ -3,13 +3,8 @@
 import asyncio
 import sys
 import os
+import websockets
 
-try:
-    import websockets
-except ImportError:
-    import subprocess
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "websockets"])
-    import websockets
 
 async def send_inject(host, port, inject_file):
     uri = f"ws://{host}:{port}"
@@ -27,11 +22,11 @@ async def send_inject(host, port, inject_file):
                 break
 
         # Read inject.js
-        with open(inject_file, 'r') as f:
+        with open(inject_file, "r") as f:
             code = f.read()
 
         # Send with type byte '1' (execute JavaScript)
-        payload = '1' + code
+        payload = "1" + code
         print(f"[*] Sending {inject_file} ({len(code)} bytes)...")
         await ws.send(payload)
 
@@ -46,6 +41,7 @@ async def send_inject(host, port, inject_file):
             print("[!] Timeout waiting for response")
 
         print("[*] Done")
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

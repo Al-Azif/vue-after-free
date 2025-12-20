@@ -4,7 +4,6 @@ Recursively encrypt files to .aes format using AES-CBC encryption.
 Same keys as PlayStation Vue decryption.
 """
 
-import os
 import base64
 from pathlib import Path
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -15,28 +14,24 @@ def encrypt_file(input_path, key, iv):
     """Encrypt a single file using AES-CBC."""
     try:
         # Read plaintext data
-        with open(input_path, 'rb') as f:
+        with open(input_path, "rb") as f:
             plaintext_data = f.read()
 
         # Pad to 16-byte boundary with null bytes (same as Vue uses)
         padding_needed = (16 - len(plaintext_data) % 16) % 16
         if padding_needed > 0:
-            plaintext_data += b'\x00' * padding_needed
+            plaintext_data += b"\x00" * padding_needed
 
         # Create cipher
-        cipher = Cipher(
-            algorithms.AES(key),
-            modes.CBC(iv),
-            backend=default_backend()
-        )
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
         encryptor = cipher.encryptor()
 
         # Encrypt
         encrypted_data = encryptor.update(plaintext_data) + encryptor.finalize()
 
         # Write encrypted file (add .aes extension)
-        output_path = str(input_path) + '.aes'
-        with open(output_path, 'wb') as f:
+        output_path = str(input_path) + ".aes"
+        with open(output_path, "wb") as f:
             f.write(encrypted_data)
 
         print(f"✓ Encrypted: {input_path} -> {output_path}")
@@ -49,8 +44,8 @@ def encrypt_file(input_path, key, iv):
 
 def main():
     # Same key and IV as Vue decryption
-    key = b'SENTV0ASDKFGJJLFJSJKLFJKOEKFSPKP'  # UTF-8
-    iv = base64.b64decode('gI1zB0GB+Z5AiNhwZXeKZw==')  # Base64 decoded
+    key = b"SENTV0ASDKFGJJLFJSJKLFJKOEKFSPKP"  # UTF-8
+    iv = base64.b64decode("gI1zB0GB+Z5AiNhwZXeKZw==")  # Base64 decoded
 
     import sys
 
@@ -81,5 +76,5 @@ def main():
         print("\nEncryption failed!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

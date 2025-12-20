@@ -1,2 +1,1 @@
-log("On screen logging works! u_u");
-
+log('On screen logging works! u_u')
