@@ -276,7 +276,7 @@ while (true) {
 	    spray[i].p2 = 0.2;
 	    spray[i].p3 = 0.3;
 	    spray[i].p4 = 0.4;
-		spray[i].p5 = 0.5;
+	   	spray[i].p5 = 0.5;
 	    spray[i].p6 = 0.6;
 	    spray[i].p7 = 0.7;
 	    spray[i].p8 = 0.8;
