@@ -368,7 +368,7 @@ var allocs = new Map()
 function make_uaf (arr) {
   var o = {}
   for (var i in { xx: '' }) {
-    for (i of [arr]) {}
+    for (i of [arr]);
     o[i]
   }
 
