@@ -185,6 +185,12 @@ declare type Fn = {
   create <const Args extends ('bigint' | 'number' | 'boolean' | 'string')[], Return extends ('bigint' | 'boolean' | 'string')>(addr: vue.BigInt | number, args: Args, ret: Return): (...func_args: { [K in keyof Args]: ArgTypeToRealType<Args[K]> }) => ArgTypeToRealType<Return>
 }
 
+declare class SyscallError extends Error {
+  errno: number
+  strerror: string
+  constructor (msg: string, errno: number, strerror: string)
+}
+
 declare var jsc_addr: vue.BigInt
 declare var libc_addr: vue.BigInt
 declare var eboot_addr: vue.BigInt

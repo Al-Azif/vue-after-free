@@ -1170,6 +1170,14 @@ var rop = {
   }
 }
 
+class SyscallError extends Error {
+  constructor (msg, errno, strerror) {
+    super(msg)
+    this.errno = errno
+    this.strerror = strerror
+  }
+}
+
 /**
  * @type {Fn}
  */
@@ -1260,7 +1268,7 @@ var fn = {
             var errno = mem.read4(errno_addr)
             var str = fn.strerror(errno)
 
-            throw new Error(`${name} returned errno ${errno}: ${str}`)
+            throw new SyscallError(`${name} returned errno ${errno}: ${str}`, errno, str)
           }
         }
 
