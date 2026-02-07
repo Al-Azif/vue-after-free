@@ -735,62 +735,62 @@ function setup () {
 function cleanup (kill_workers = false) {
   debug('Cleaning up...')
 
-  // TODO: Closing sockets/pipes hangs - workers blocked on read
-  // Skipping cleanup for now until we find a proper solution
+  // Close ipv6 sockets first (not blocking)
+  for (let i = 0; i < ipv6_socks.length; i++) {
+    close(ipv6_socks[i])
+  }
 
-  // // Close all files.
-  // for (let i = 0; i < ipv6_socks.length; i++) {
-  //   close(ipv6_socks[i])
-  // }
+  // Signal workers to unblock from read(), then kill them
+  // Workers loop: read(pipe) -> work -> done -> repeat
+  // We write to unblock, then kill before they loop back
 
-  // close(new BigInt(uio_sock_1))
-  // close(new BigInt(uio_sock_0))
-  // close(new BigInt(iov_sock_1))
-  // close(new BigInt(iov_sock_0))
+  for (let i = 0; i < IOV_THREAD_NUM; i++) {
+    const worker = iov_recvmsg_workers[i]
+    if (worker !== undefined) {
+      // Write to unblock from read()
+      write(new BigInt(worker.pipe_1), worker.signal_buf, 1)
+      if (kill_workers && worker.thread_id !== undefined) {
+        thr_kill(worker.thread_id, 9) // SIGKILL
+      }
+    }
+  }
 
+  for (let i = 0; i < UIO_THREAD_NUM; i++) {
+    const worker = uio_readv_workers[i]
+    if (worker !== undefined) {
+      write(new BigInt(worker.pipe_1), worker.signal_buf, 1)
+      if (kill_workers && worker.thread_id !== undefined) {
+        thr_kill(worker.thread_id, 9) // SIGKILL
+      }
+    }
+  }
+
+  for (let i = 0; i < UIO_THREAD_NUM; i++) {
+    const worker = uio_writev_workers[i]
+    if (worker !== undefined) {
+      write(new BigInt(worker.pipe_1), worker.signal_buf, 1)
+      if (kill_workers && worker.thread_id !== undefined) {
+        thr_kill(worker.thread_id, 9) // SIGKILL
+      }
+    }
+  }
+
+  if (spray_ipv6_worker !== undefined) {
+    write(new BigInt(spray_ipv6_worker.pipe_1), spray_ipv6_worker.signal_buf, 1)
+    if (kill_workers && spray_ipv6_worker.thread_id !== undefined) {
+      thr_kill(spray_ipv6_worker.thread_id, 9) // SIGKILL
+    }
+  }
+
+  // Now close the main sockets (workers are dead or unblocked)
+  close(new BigInt(uio_sock_1))
+  close(new BigInt(uio_sock_0))
+  close(new BigInt(iov_sock_1))
+  close(new BigInt(iov_sock_0))
+
+  // Skip uaf_socket - hangs
   // if (uaf_socket !== undefined) {
-  //   close(new BigInt(uaf_socket)) // hangs
-  // }
-
-  // for (let i = 0; i < IOV_THREAD_NUM; i++) {
-  //   const worker = iov_recvmsg_workers[i]
-  //   if (worker !== undefined) {
-  //     if (kill_workers && worker.thread_id !== undefined) {
-  //       thr_kill(worker.thread_id, 9) // SIGKILL
-  //     }
-  //     close(new BigInt(worker.pipe_0))
-  //     close(new BigInt(worker.pipe_1))
-  //   }
-  // }
-
-  // for (let i = 0; i < UIO_THREAD_NUM; i++) {
-  //   const worker = uio_readv_workers[i]
-  //   if (worker !== undefined) {
-  //     if (kill_workers && worker.thread_id !== undefined) {
-  //       thr_kill(worker.thread_id, 9) // SIGKILL
-  //     }
-  //     close(new BigInt(worker.pipe_0))
-  //     close(new BigInt(worker.pipe_1))
-  //   }
-  // }
-
-  // for (let i = 0; i < UIO_THREAD_NUM; i++) {
-  //   const worker = uio_writev_workers[i]
-  //   if (worker !== undefined) {
-  //     if (kill_workers && worker.thread_id !== undefined) {
-  //       thr_kill(worker.thread_id, 9) // SIGKILL
-  //     }
-  //     close(new BigInt(worker.pipe_0))
-  //     close(new BigInt(worker.pipe_1))
-  //   }
-  // }
-
-  // if (spray_ipv6_worker !== undefined) {
-  //   if (kill_workers && spray_ipv6_worker.thread_id !== undefined) {
-  //     thr_kill(spray_ipv6_worker.thread_id, 9) // SIGKILL
-  //   }
-  //   close(new BigInt(spray_ipv6_worker.pipe_0))
-  //   close(new BigInt(spray_ipv6_worker.pipe_1))
+  //   close(new BigInt(uaf_socket))
   // }
 
   if (prev_core >= 0) {
