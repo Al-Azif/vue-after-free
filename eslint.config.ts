@@ -28,29 +28,27 @@ export default defineConfig([
   }),
   {
     rules: {
-    
-    '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
 
-   
-    '@stylistic/quote-props': ['error', 'consistent-as-needed'],
+      '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
 
-  
-    quotes: 'off',
-    'quote-props': 'off',
+      '@stylistic/quote-props': ['error', 'consistent-as-needed'],
 
-    camelcase: 'off',
-    'no-unused-vars': 'off',
-    'no-var': 'off',
-    'no-undef': 'off',
-    'no-redeclare': 'off',
-    'no-unused-expressions': 'off',
-    'no-fallthrough': 'off',
-    'no-new-native-nonconstructor': 'off',
-    'no-extend-native': 'off',
-    'no-new': 'off',
+      'quotes': 'off',
+      'quote-props': 'off',
 
-    '@typescript-eslint/no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-expressions': 'off',
-  },
+      'camelcase': 'off',
+      'no-unused-vars': 'off',
+      'no-var': 'off',
+      'no-undef': 'off',
+      'no-redeclare': 'off',
+      'no-unused-expressions': 'off',
+      'no-fallthrough': 'off',
+      'no-new-native-nonconstructor': 'off',
+      'no-extend-native': 'off',
+      'no-new': 'off',
+
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-expressions': 'off',
+    },
   },
 ])
